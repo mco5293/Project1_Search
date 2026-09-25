@@ -46,7 +46,7 @@ def get_valid_next_states(state):
         boat = state[4]
 
     potential_states=[]
-    moves=[(1,1),(1,0),(0,1),(2,0),(0,2)] #all valid moves from one side to the other (M,C)
+    moves=[(1,0),(0,1),(2,0),(0,2),(1,1)] #all valid moves from one side to the other (M,C)
 
     for move_m, move_c in moves:
         if boat=='L':
@@ -76,7 +76,7 @@ def bfs(start_state):
     visited = [] #states that have been expanded
     node_exp = 0 #node expansions counter
 
-    while queue:
+    while queue:#FIFO
         current_state, path = queue.pop(0)#take current state out of queue
         if current_state in visited:#make sure it isnt a dupe
             continue
@@ -94,7 +94,31 @@ def bfs(start_state):
 
     return None, None, node_exp #path, cost, node_exp NO SOLUTION, so its null/none
 
+def dfs(start_state):
+    GOAL_STATE=[0,0,3,3,'R']
+    path=[start_state]
+    stack = [(start_state, path)] #(current state, path to get to tht state)
+    visited = [] #states that have been expanded
+    node_exp = 0 #node expansions counter
+    while stack:
+        current_state,path=stack.pop() #removes the latest item so LIFO
+        if current_state in visited:
+            continue
+        if current_state==GOAL_STATE:
+            cost=len(path)-1
+            return path,cost,node_exp
+
+        visited.append(current_state)
+        node_exp+=1
+        next_states= get_valid_next_states(current_state)
+        for state in next_states:
+            new_path=path+[state]
+            stack.append((state,new_path))
+
+    return None,None,node_exp
 
 start_state = read_input()#read the input.txt
+dfs_p,dfs_c,dfs_n = dfs(start_state)
+print_final_answer("Q1.1.a (DFS)", dfs_p,dfs_c,dfs_n)#print that in the right format
 bfs_p, bfs_c, bfs_n = bfs(start_state)#run bfs, output: path, cost, node expansions
 print_final_answer("Q1.1.b (BFS)", bfs_p,bfs_c,bfs_n)#print that in the right format
