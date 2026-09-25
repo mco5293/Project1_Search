@@ -74,7 +74,7 @@ def get_valid_next_states(node):
         boat = state[4]
 
     potential_states=[]
-    moves=[(1,1), (1,0), (0,1), (2,0), (0,2)] #all valid moves from one side to the other (M,C)
+    moves=[(0,1), (1,0), (1,1), (2,0), (0,2)] #all valid moves from one side to the other (M,C)
 
     for move_m, move_c in moves:
         if boat=='L':
@@ -103,7 +103,7 @@ def get_costA(state, new_state):
         c_right_new = new_state[3]
         boat_new = new_state[4]
 
-    #Each missionary costs 2, each cannibal costs 1
+    #each missionary costs 2, each cannibal costs 1
     if boat == 'L':
         move_m = m_left - m_left_new
         move_c = c_left - c_left_new
@@ -121,7 +121,7 @@ def get_costB(state):
         c_right = state[3]
         boat = state[4]
 
-    #Right to left boat trip costs 1, left to right boat trip costs 2
+    #right to left boat trip costs 1, left to right boat trip costs 2
     if boat == 'L':
         return 2
     elif boat == 'R':
@@ -138,7 +138,7 @@ def expand_node(queue, node, cost_type):
         c_right = state[3]
         boat = state[4]
     
-    #Creates nodes for all new potential state and adds them to the priority queue
+    #creates nodes for all new potential state and adds them to the priority queue
     potential_states = get_valid_next_states(node)
     if cost_type == "A":
         for new_state in potential_states:
@@ -150,7 +150,7 @@ def expand_node(queue, node, cost_type):
             new_cost = get_costB(state)
             new_node = Node(state = new_state, parent = node, cost = node.cost + new_cost)
             add_queue(queue, new_node)
-
+            
 #traces the path back from the goal state to the start state, then reverses order for printing purposes
 def get_path(node):
     path = []
@@ -163,9 +163,14 @@ def get_path(node):
 #core function, loops through queue until goal state is reached
 def ucs_cost(queue, start_node, cost_type):
     add_queue(queue, start_node)
-
+    visited = set()
     while queue:
         node = next_node(queue)
+
+        if tuple(node.state) in visited:
+            continue
+        
+        visited.add(tuple(node.state))
 
         if node.state == [0, 0, 3, 3, 'R']:
             path = get_path(node)
