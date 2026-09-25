@@ -11,6 +11,7 @@ def read_input():
         start_state = input_state.split(",") #make start state into an array seperated by the commas
         for i in range(4): #make the # of missionaries and cannibals an int
             start_state[i] = int(start_state[i])
+        return start_state
 
 #checks to make sure the state follows all of the rules
 #not negative or greater than 3
@@ -27,7 +28,6 @@ def is_valid(state):
     #checks for negative values or greater than 3
     if(m_left<0 or c_left<0 or m_right<0 or c_right<0 or m_left>3 or c_left>3 or m_right >3 or c_right>3):
         return False
-
     #checks for more cannibals than missionaries if m is not 0
     if(c_left>m_left and m_left != 0): #LEFT
         return False;
@@ -35,6 +35,7 @@ def is_valid(state):
         return False;     
     return True; #if it makes it this far, it survived the checks
 
+#finds every possible next state that can happen at the current state
 def get_valid_next_states(state):
     #extract each piece of the state array
     for i in state:
@@ -57,3 +58,43 @@ def get_valid_next_states(state):
             potential_states.append(new_state)
     
     return potential_states
+
+def print_final_answer(name, path,cost, node_exp):
+    print(f"The solution of {name} is:\nSolution Path:")
+    for i in range(len(path)):
+        if i<len(path)-1:
+            print(f"{path[i]} ->")
+        else:
+            print(path[i])
+            
+    print(f"Total cost = {cost}\nNumber of node expansions = {node_exp}")
+
+def bfs(start_state):
+    GOAL_STATE = [0,0,3,3,"R"]
+    path=[start_state]
+    queue = [(start_state, path)] #(current state, path to get to tht state)
+    visited = [] #states that have been expanded
+    node_exp = 0 #node expansions counter
+
+    while queue:
+        current_state, path = queue.pop(0)#take current state out of queue
+        if current_state in visited:#make sure it isnt a dupe
+            continue
+        if current_state==GOAL_STATE:#check if we made to the goal state
+            cost = len(path)-1
+            return path, cost, node_exp
+
+        visited.append(current_state)#not at goal state so add this one to visited and lets expand
+        node_exp+=1
+        next_states = get_valid_next_states(current_state)#find the next valid states so we can add those to queue
+
+        for state in next_states:#^add them to the queue^
+            new_path= path + [state]
+            queue.append((state,new_path))
+
+    return None, None, node_exp #path, cost, node_exp NO SOLUTION, so its null/none
+
+
+start_state = read_input()#read the input.txt
+bfs_p, bfs_c, bfs_n = bfs(start_state)#run bfs, output: path, cost, node expansions
+print_final_answer("Q1.1.b (BFS)", bfs_p,bfs_c,bfs_n)#print that in the right format
