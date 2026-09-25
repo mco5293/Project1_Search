@@ -25,13 +25,13 @@ def is_valid(state):
         boat = state[4]
 
     #checks for negative values or greater than 3
-    if(m_left<0 or c_left<0 or m_right<0 or c_right<0 or m_left>3 or c_left>3 or m_right >3 or c_right>3):
+    if(m_left < 0 or c_left < 0 or m_right < 0 or c_right < 0 or m_left > 3 or c_left > 3 or m_right > 3 or c_right > 3):
         return False
 
     #checks for more cannibals than missionaries if m is not 0
-    if(c_left>m_left and m_left != 0): #LEFT
+    if(c_left > m_left and m_left != 0): #LEFT
         return False
-    elif(c_right>m_right and m_right!= 0): #RIGHT
+    elif(c_right > m_right and m_right!= 0): #RIGHT
         return False    
     return True #if it makes it this far, it survived the checks
 
@@ -128,29 +128,20 @@ def get_costB(state):
         return 1
 
 #expand the node, adding expansions to the queue
-def expand_node(queue, node, cost_type):
-    #extract each piece of the state array
-    state = node.state
-    for i in state:
-        m_left = state[0]
-        c_left = state[1]
-        m_right = state[2]
-        c_right = state[3]
-        boat = state[4]
-    
+def expand_node(queue, node, cost_type):  
     #creates nodes for all new potential state and adds them to the priority queue
     potential_states = get_valid_next_states(node)
     if cost_type == "A":
         for new_state in potential_states:
-            new_cost = get_costA(state, new_state)
+            new_cost = get_costA(node.state, new_state)
             new_node = Node(state = new_state, parent = node, cost = node.cost + new_cost)
             add_queue(queue, new_node)
     elif cost_type == "B":
         for new_state in potential_states:
-            new_cost = get_costB(state)
+            new_cost = get_costB(node.state)
             new_node = Node(state = new_state, parent = node, cost = node.cost + new_cost)
             add_queue(queue, new_node)
-            
+
 #traces the path back from the goal state to the start state, then reverses order for printing purposes
 def get_path(node):
     path = []
