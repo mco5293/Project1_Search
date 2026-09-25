@@ -151,6 +151,16 @@ def get_path(node):
     path.reverse()
     return path
 
+def print_final_answer(name, path,cost, node_exp):
+    print(f"The solution of {name} is:\nSolution Path:")
+    for i in range(len(path)):
+        if i<len(path)-1:
+            print(f"{path[i]} ->")
+        else:
+            print(path[i])
+            
+    print(f"Total cost = {cost}\nNumber of node expansions = {node_exp}")
+
 #core function, loops through queue until goal state is reached
 def ucs_cost(queue, start_node, cost_type):
     add_queue(queue, start_node)
@@ -165,7 +175,7 @@ def ucs_cost(queue, start_node, cost_type):
 
         if node.state == [0, 0, 3, 3, 'R']:
             path = get_path(node)
-            print(f"The solution of Q2.1 (UCS, cost model {cost_type}) is:\nSolution Path: {path}\nTotal cost = {node.cost}\nNumber of node expansions = {len(visited)}")
+            print_final_answer(f"Q2.1 (UCS, cost model {cost_type})", path, node.cost, len(visited))
             return
 
         expand_node(queue, node, cost_type)

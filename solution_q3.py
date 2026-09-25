@@ -141,8 +141,18 @@ def get_path(node):
     path.reverse()
     return path
 
+def print_final_answer(name, path,cost, node_exp):
+    print(f"The solution of {name} is:\nSolution Path:")
+    for i in range(len(path)):
+        if i<len(path)-1:
+            print(f"{path[i]} ->")
+        else:
+            print(path[i])
+            
+    print(f"Total cost = {cost}\nNumber of node expansions = {node_exp}")
+
 #core function, loops through queue until goal state is reached
-def ucs_cost(queue, start_node, heuristic_type):
+def a_star_cost(queue, start_node, heuristic_type):
     add_queue(queue, start_node)
     visited = set()
     while queue:
@@ -155,7 +165,7 @@ def ucs_cost(queue, start_node, heuristic_type):
 
         if node.state == [0, 0, 3, 3, 'R']:
             path = get_path(node)
-            print(f"The solution of Q3.1 (Heuristic {heuristic_type}) is:\nSolution Path: {path}\nTotal cost = {node.cost}\nNumber of node expansions = {len(visited)}")
+            print_final_answer(f"Q3.1 (Heuristic {heuristic_type})", path, node.cost, len(visited))
             return
 
         expand_node(queue, node, heuristic_type)
@@ -175,5 +185,5 @@ if __name__ == '__main__':
     start_node1 = Node(state = start_state, parent = None, cost = 0, heuristic = 2 * m_left + c_left) #h_1(s) = 2M_left + 1C_left
     start_node2 = Node(state = start_state, parent = None, cost = 0, heuristic = abs((2 * m_left + c_left)/3)) #h_2(s) = |(2M_left + 1C_left)/3|
 
-    ucs_cost(queue, start_node1, "1")
-    ucs_cost(queue, start_node2, "2")
+    a_star_cost(queue, start_node1, "1")
+    a_star_cost(queue, start_node2, "2")
