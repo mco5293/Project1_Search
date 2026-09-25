@@ -34,3 +34,26 @@ def is_valid(state):
     elif(c_right>m_right and m_right!= 0): #RIGHT
         return False;     
     return True; #if it makes it this far, it survived the checks
+
+def get_valid_next_states(state):
+    #extract each piece of the state array
+    for i in state:
+        m_left = state[0]
+        c_left = state[1]
+        m_right = state[2]
+        c_right = state[3]
+        boat = state[4]
+
+    potential_states=[]
+    moves=[(1,1),(1,0),(0,1),(2,0),(0,2)] #all valid moves from one side to the other (M,C)
+
+    for move_m, move_c in moves:
+        if boat=='L':
+            new_state=[m_left-move_m,c_left-move_c,m_right+move_m,c_right+move_c,'R']
+        elif boat=='R':
+            new_state=[m_left+move_m,c_left+move_c,m_right-move_m,c_right-move_c,'L']
+
+        if is_valid(new_state):
+            potential_states.append(new_state)
+    
+    return potential_states
