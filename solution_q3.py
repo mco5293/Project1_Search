@@ -1,3 +1,4 @@
+import math
 def read_input():
     with open('input.txt',"r") as file: #open and read all of input.txt
         input_state = file.read()
@@ -127,7 +128,11 @@ def expand_node(queue, node, heuristic_type):
         if heuristic_type == "1":
             new_heuristic = 2 * m_left_new + c_left_new #h_1(s) = 2M_left + 1C_left
         elif heuristic_type == "2":
-            new_heuristic = abs((2 * m_left_new + c_left_new)/3) #h_2(s) = |(2M_left + 1C_left)/3|
+            new_heuristic = math.ceil((2 * m_left_new + c_left_new)/3) #h_2(s) = |(2M_left + 1C_left)/3|
+        elif heuristic_type == "3":
+            new_heuristic = 2 * m_left_new + c_left_new
+            if boat_new == "R" and (m_left_new + c_left_new) > 0:
+                new_heuristic += 1
         new_cost = get_costA(node.state, new_state)
         new_node = Node(state = new_state, parent = node, cost = node.cost + new_cost, heuristic = new_heuristic)
         add_queue(queue, new_node)
@@ -161,13 +166,12 @@ def a_star_cost(queue, start_node, heuristic_type):
         if tuple(node.state) in visited:
             continue
         
-        visited.add(tuple(node.state))
-
+    
         if node.state == [0, 0, 3, 3, 'R']:
             path = get_path(node)
             print_final_answer(f"Q3.1 (Heuristic {heuristic_type})", path, node.cost, len(visited))
             return
-
+        visited.add(tuple(node.state)) #moved here so it doesnt count the goal state as expanded
         expand_node(queue, node, heuristic_type)
 
     print(f"No solution found with Heuristic {heuristic_type}.")
@@ -183,7 +187,16 @@ if __name__ == '__main__':
         boat = start_state[4]
 
     start_node1 = Node(state = start_state, parent = None, cost = 0, heuristic = 2 * m_left + c_left) #h_1(s) = 2M_left + 1C_left
-    start_node2 = Node(state = start_state, parent = None, cost = 0, heuristic = abs((2 * m_left + c_left)/3)) #h_2(s) = |(2M_left + 1C_left)/3|
+    start_node2 = Node(state = start_state, parent = None, cost = 0, heuristic = math.ceil((2 * m_left + c_left)/3)) #h_2(s) = |(2M_left + 1C_left)/3|
 
+    #NEW HEURISTIC h3 - This one takes into account which side the boat is on, thats why the if statement decides how it starts
+    start_h3 = 2 * m_left + c_left
+    if boat=="R" and (m_left+c_left) > 0:
+        start_h3 +=1
+
+    start_node3 = Node(state=start_state, parent=None, cost=0, heuristic=start_h3)
+    
+    
     a_star_cost(queue, start_node1, "1")
     a_star_cost(queue, start_node2, "2")
+    a_star_cost(queue, start_node3, "3")
